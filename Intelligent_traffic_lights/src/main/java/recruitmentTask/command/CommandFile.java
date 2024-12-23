@@ -1,4 +1,4 @@
-package recrutationTask.command;
+package recruitmentTask.command;
 
 import java.util.List;
 

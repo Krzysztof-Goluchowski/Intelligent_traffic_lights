@@ -1,4 +1,4 @@
-package recrutationTask.command;
+package recruitmentTask.command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;

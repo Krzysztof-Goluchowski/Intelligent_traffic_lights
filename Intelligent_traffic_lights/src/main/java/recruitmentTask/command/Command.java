@@ -1,7 +1,7 @@
-package recrutationTask.command;
+package recruitmentTask.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import recrutationTask.road.Direction;
+import recruitmentTask.road.Direction;
 
 public class Command {
     @JsonProperty("type")

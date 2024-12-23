@@ -1,4 +1,4 @@
-package recrutationTask.road;
+package recruitmentTask.road;
 
 public enum Direction {
     north,

@@ -1,7 +1,7 @@
-package recrutationTask.command;
+package recruitmentTask.command;
 
 import org.junit.jupiter.api.Test;
-import recrutationTask.road.Direction;
+import recruitmentTask.road.Direction;
 
 import java.io.IOException;
 import java.nio.file.Files;

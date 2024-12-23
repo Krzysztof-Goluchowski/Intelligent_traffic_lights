@@ -1,4 +1,4 @@
-package recrutationTask.command;
+package recruitmentTask.command;
 
 public enum CommandType {
     step,
