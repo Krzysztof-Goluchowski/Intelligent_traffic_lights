@@ -1,8 +1,10 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-group = 'recrutationTask'
+group = 'recruitmentTask'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -15,6 +17,14 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+application {
+    mainClass = 'recruitmentTask.Main'
+}
+
 test {
     useJUnitPlatform()
+}
+
+tasks.named('shadowJar') {
+    archiveClassifier.set('all')
 }

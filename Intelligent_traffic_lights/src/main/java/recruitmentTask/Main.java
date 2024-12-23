@@ -1,7 +1,7 @@
-package recrutationTask;
+package recruitmentTask;
 
-import recrutationTask.command.Command;
-import recrutationTask.command.CommandReader;
+import recruitmentTask.command.Command;
+import recruitmentTask.command.CommandReader;
 
 import java.io.IOException;
 import java.util.List;
