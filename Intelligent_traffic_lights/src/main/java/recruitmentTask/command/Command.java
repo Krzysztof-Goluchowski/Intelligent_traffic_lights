@@ -26,4 +26,20 @@ public class Command {
     public Direction getEndRoad() {
         return endRoad;
     }
+
+    public void setCommandType(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public void setStartRoad(Direction startRoad) {
+        this.startRoad = startRoad;
+    }
+
+    public void setEndRoad(Direction endRoad) {
+        this.endRoad = endRoad;
+    }
 }
