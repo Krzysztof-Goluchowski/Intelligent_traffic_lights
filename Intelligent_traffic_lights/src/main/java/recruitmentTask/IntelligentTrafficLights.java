@@ -2,11 +2,12 @@ package recruitmentTask;
 
 import recruitmentTask.command.Command;
 import recruitmentTask.command.CommandReader;
+import recruitmentTask.simulation.Simulation;
 
 import java.io.IOException;
 import java.util.List;
 
-public class Main {
+public class IntelligentTrafficLights {
     public static void main(String[] args) {
         System.out.println("Hello world!");
 
@@ -15,13 +16,15 @@ public class Main {
         System.out.println("Input file: " + inFile);
         System.out.println("Output file: " + outFile);
 
+        List<Command> commands;
+
         try {
-            List<Command> commands = CommandReader.readCommands(inFile);
-            for (Command command : commands) {
-                System.out.println(command.getCommandType());
-            }
+            commands = CommandReader.readCommands(inFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        Simulation simulation = new Simulation(commands);
+        simulation.run();
     }
 }
