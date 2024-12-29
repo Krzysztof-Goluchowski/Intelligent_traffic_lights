@@ -36,8 +36,8 @@ class RoadTest {
 
         road.addVehicle(vehicle1);
         road.addVehicle(vehicle2);
-        String removedVehicle1Id = road.removeVehicle();
-        String removedVehicle2Id = road.removeVehicle();
+        String removedVehicle1Id = road.removeVehicle().vehicleId();
+        String removedVehicle2Id = road.removeVehicle().vehicleId();
 
         assertEquals("V1", removedVehicle1Id);
         assertEquals("V2", removedVehicle2Id);
@@ -46,7 +46,7 @@ class RoadTest {
 
     @Test
     void testRemoveVehicleFromEmptyRoad() {
-        String removedVehicleId = road.removeVehicle();
+        Vehicle removedVehicleId = road.removeVehicle();
         assertNull(removedVehicleId);
     }
 

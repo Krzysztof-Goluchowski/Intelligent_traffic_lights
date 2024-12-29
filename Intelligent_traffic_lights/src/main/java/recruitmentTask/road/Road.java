@@ -18,12 +18,12 @@ public class Road {
         vehicles.add(vehicle);
     }
 
-    public String removeVehicle() {
+    public Vehicle removeVehicle() {
         Vehicle vehicle = vehicles.poll();
         if (vehicle == null) {
             return null;
         }
-        return vehicle.vehicleId();
+        return vehicle;
     }
 
     public Queue<Vehicle> getVehicles() {

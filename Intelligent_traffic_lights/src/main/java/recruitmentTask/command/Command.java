@@ -11,6 +11,19 @@ public class Command {
     private Direction startRoad;
     private Direction endRoad;
 
+    public Command() {}
+
+    public Command(CommandType commandType) {
+        this.commandType = commandType;
+    }
+
+    public Command(CommandType commandType, String vehicleId, Direction startRoad, Direction endRoad) {
+        this.commandType = commandType;
+        this.vehicleId = vehicleId;
+        this.startRoad = startRoad;
+        this.endRoad = endRoad;
+    }
+
     public CommandType getCommandType() {
         return commandType;
     }

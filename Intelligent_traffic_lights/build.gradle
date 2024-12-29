@@ -18,7 +18,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'recruitmentTask.Main'
+    mainClass = 'recruitmentTask.IntelligentTrafficLights'
 }
 
 test {
