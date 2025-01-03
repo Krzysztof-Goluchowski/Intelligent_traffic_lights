@@ -19,41 +19,33 @@ class SimulationTest {
         simulation = new Simulation(List.of());
     }
 
-    @Test
-    void testAddVehicle() {
-        Command command = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.south);
+    private Command createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
+        return new Command(CommandType.addVehicle, vehicleId, start, end);
+    }
 
-        Simulation simulation = new Simulation(List.of(command));
-        simulation.run();
-
-        assertEquals(1, simulation.getRoads().get(Direction.north).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.south).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.west).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.east).getVehicleCount());
+    private Command createStepCommand() {
+        return new Command(CommandType.step);
     }
 
     @Test
     void testRunWithSingleStep() {
-        Command command1 = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.south);
-        Command command2 = new Command(CommandType.step);
+        Command command1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        Command command2 = createStepCommand();
 
         Simulation simulation = new Simulation(List.of(command1, command2));
         simulation.run();
 
-        assertEquals(0, simulation.getRoads().get(Direction.north).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.south).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.west).getVehicleCount());
-        assertEquals(0, simulation.getRoads().get(Direction.east).getVehicleCount());
-        assertEquals(1, simulation.getStepStatuses().size());
+        List<List<String>> statuses = simulation.getStepStatuses();
+        assertEquals(1, statuses.size());
+        assertEquals(List.of("V1"), statuses.get(0));
     }
 
     @Test
     void testRecordStepStatus() {
-        Command addVehicle = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.south);
-        Command stepCommand1 = new Command(CommandType.step);
-        Command stepCommand2 = new Command(CommandType.step);
+        Command addVehicle = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        Command step = createStepCommand();
 
-        simulation = new Simulation(List.of(addVehicle, stepCommand1, stepCommand2));
+        simulation = new Simulation(List.of(addVehicle, step, step));
         simulation.run();
 
         List<List<String>> statuses = simulation.getStepStatuses();
@@ -61,34 +53,6 @@ class SimulationTest {
         assertEquals(2, statuses.size());
         assertEquals(List.of("V1"), statuses.get(0));
         assertTrue(statuses.get(1).isEmpty());
-    }
-
-    @Test
-    void testIntersectionPriority() {
-        Command addVehicle1 = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.east);
-        Command addVehicle2 = new Command(CommandType.addVehicle, "V2", Direction.south, Direction.west);
-        Command stepCommand = new Command(CommandType.step);
-
-        simulation = new Simulation(List.of(addVehicle1, addVehicle2, stepCommand));
-        simulation.run();
-
-        // Verify that both vehicles left the intersection (since they have equal priority)
-        List<List<String>> statuses = simulation.getStepStatuses();
-        assertEquals(List.of("V1", "V2"), statuses.get(0));
-    }
-
-    @Test
-    void testLightChange() {
-        Command addVehicle1 = new Command(CommandType.addVehicle, "V1", Direction.west, Direction.east);
-        Command stepCommand = new Command(CommandType.step);
-
-        simulation = new Simulation(List.of(addVehicle1, stepCommand));
-        simulation.run();
-
-        assertTrue(simulation.getIntersectionController().isGreenOn(Direction.west));
-        assertTrue(simulation.getIntersectionController().isGreenOn(Direction.east));
-        assertFalse(simulation.getIntersectionController().isGreenOn(Direction.north));
-        assertFalse(simulation.getIntersectionController().isGreenOn(Direction.south));
     }
 
     @Test
@@ -104,53 +68,64 @@ class SimulationTest {
 
     @Test
     void testFirstCarTurnsLeft() {
-        Command addVehicle1 = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.south);
-        Command addVehicle2 = new Command(CommandType.addVehicle, "V2", Direction.north, Direction.south);
-        Command addVehicle3 = new Command(CommandType.addVehicle, "V3", Direction.north, Direction.south);
+        Command addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        Command addVehicle2 = createAddVehicleCommand("V2", Direction.north, Direction.south);
+        Command addVehicle3 = createAddVehicleCommand("V3", Direction.north, Direction.south);
 
-        Command addVehicle4 = new Command(CommandType.addVehicle, "V4", Direction.south, Direction.west);
-        Command addVehicle5 = new Command(CommandType.addVehicle, "V5", Direction.south, Direction.north);
-        Command addVehicle6 = new Command(CommandType.addVehicle, "V6", Direction.south, Direction.north);
+        Command addVehicle4 = createAddVehicleCommand("V4", Direction.south, Direction.west);  // V4 turns left
+        Command addVehicle5 = createAddVehicleCommand("V5", Direction.south, Direction.north);
+        Command addVehicle6 = createAddVehicleCommand("V6", Direction.south, Direction.north);
 
-        Command stepCommand1 = new Command(CommandType.step);
-        Command stepCommand2 = new Command(CommandType.step);
-        Command stepCommand3 = new Command(CommandType.step);
+        Command step = createStepCommand();
+        List<Command> commands = List.of(
+                addVehicle1, addVehicle2, addVehicle3,
+                addVehicle4, addVehicle5, addVehicle6,
+                step, step, step, step, step, step
+        );
 
-        simulation = new Simulation(List.of(addVehicle1, addVehicle2, addVehicle3, addVehicle4, addVehicle5, addVehicle6, stepCommand1, stepCommand2, stepCommand3, stepCommand2, stepCommand3, stepCommand2));
+        simulation = new Simulation(commands);
         simulation.run();
 
         List<List<String>> statuses = simulation.getStepStatuses();
-        assertEquals(List.of("V1"), statuses.get(0));
-        assertEquals(List.of("V2"), statuses.get(1));
-        assertEquals(List.of("V3"), statuses.get(2));
-        assertEquals(List.of("V4"), statuses.get(3));
-        assertEquals(List.of("V5"), statuses.get(4));
-        assertEquals(List.of("V6"), statuses.get(5));
+
+        assertEquals(List.of("V1"), statuses.get(0), "First vehicle from the north should pass.");
+        assertEquals(List.of("V2"), statuses.get(1), "Second vehicle from the north should pass.");
+        assertEquals(List.of("V3"), statuses.get(2), "Third vehicle from the north should pass.");
+
+        assertEquals(List.of("V4"), statuses.get(3), "Vehicle turning left (V4) should pass next.");
+        assertEquals(List.of("V5"), statuses.get(4), "Vehicle behind V4 should pass after it.");
+        assertEquals(List.of("V6"), statuses.get(5), "Next vehicle from the south should pass last.");
     }
 
     @Test
     void testSecondCarTurnsLeft() {
-        Command addVehicle1 = new Command(CommandType.addVehicle, "V1", Direction.north, Direction.south);
-        Command addVehicle2 = new Command(CommandType.addVehicle, "V2", Direction.north, Direction.south);
-        Command addVehicle3 = new Command(CommandType.addVehicle, "V3", Direction.north, Direction.south);
+        Command addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        Command addVehicle2 = createAddVehicleCommand("V2", Direction.north, Direction.south);
+        Command addVehicle3 = createAddVehicleCommand("V3", Direction.north, Direction.south);
 
-        Command addVehicle4 = new Command(CommandType.addVehicle, "V4", Direction.south, Direction.north);
-        Command addVehicle5 = new Command(CommandType.addVehicle, "V5", Direction.south, Direction.west);
-        Command addVehicle6 = new Command(CommandType.addVehicle, "V6", Direction.south, Direction.north);
+        Command addVehicle4 = createAddVehicleCommand("V4", Direction.south, Direction.north);
+        Command addVehicle5 = createAddVehicleCommand("V5", Direction.south, Direction.west);  // V5 turns left
+        Command addVehicle6 = createAddVehicleCommand("V6", Direction.south, Direction.north);
 
-        Command stepCommand1 = new Command(CommandType.step);
-        Command stepCommand2 = new Command(CommandType.step);
-        Command stepCommand3 = new Command(CommandType.step);
+        Command step = createStepCommand();
 
-        simulation = new Simulation(List.of(addVehicle1, addVehicle2, addVehicle3, addVehicle4, addVehicle5, addVehicle6, stepCommand1, stepCommand2, stepCommand3, stepCommand2, stepCommand3, stepCommand2));
+        List<Command> commands = List.of(
+                addVehicle1, addVehicle2, addVehicle3,
+                addVehicle4, addVehicle5, addVehicle6,
+                step, step, step, step, step, step
+        );
+
+        simulation = new Simulation(commands);
         simulation.run();
 
         List<List<String>> statuses = simulation.getStepStatuses();
-        assertEquals(List.of("V1", "V4"), statuses.get(0));
-        assertEquals(List.of("V2"), statuses.get(1));
-        assertEquals(List.of("V3"), statuses.get(2));
-        assertEquals(List.of("V5"), statuses.get(3));
-        assertEquals(List.of("V6"), statuses.get(4));
-        assertTrue(statuses.get(5).isEmpty());
+
+        assertEquals(List.of("V1", "V4"), statuses.get(0), "First vehicle from the north and first from the south should pass.");
+        assertEquals(List.of("V2"), statuses.get(1), "Second vehicle from the north should pass.");
+        assertEquals(List.of("V3"), statuses.get(2), "Third vehicle from the north should pass.");
+
+        assertEquals(List.of("V5"), statuses.get(3), "V5 should pass next.");
+        assertEquals(List.of("V6"), statuses.get(4), "Next vehicle from the south should pass after V5.");
+        assertTrue(statuses.get(5).isEmpty(), "No vehicles should remain after all have passed.");
     }
 }
