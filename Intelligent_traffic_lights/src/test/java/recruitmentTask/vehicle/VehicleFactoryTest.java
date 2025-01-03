@@ -9,13 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class VehicleFactoryTest {
 
+    private Command createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
+        return new Command(CommandType.addVehicle, vehicleId, start, end);
+    }
+
     @Test
     void testCreate() {
-        Command command = new Command();
-        command.setCommandType(CommandType.addVehicle);
-        command.setVehicleId("Vehicle1");
-        command.setStartRoad(Direction.north);
-        command.setEndRoad(Direction.south);
+        Command command = createAddVehicleCommand("Vehicle1", Direction.north, Direction.south);
 
         Vehicle vehicle = VehicleFactory.create(command);
 

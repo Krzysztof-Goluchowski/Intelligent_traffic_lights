@@ -13,8 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommandReaderTest {
 
     @Test
-    void testReadCommands_withValidInputFile() throws IOException {
-        // Given
+    void testReadCommandsWithValidInputFile() throws IOException {
         String jsonContent = """
             {
                 "commands": [
@@ -40,10 +39,8 @@ class CommandReaderTest {
         Path tempFile = Files.createTempFile("input", ".json");
         Files.writeString(tempFile, jsonContent);
 
-        // When
         List<Command> commands = CommandReader.readCommands(tempFile.toString());
 
-        // Then
         assertEquals(3, commands.size());
         assertEquals(CommandType.addVehicle, commands.get(0).getCommandType());
         assertEquals("vehicle1", commands.get(0).getVehicleId());
@@ -64,8 +61,7 @@ class CommandReaderTest {
     }
 
     @Test
-    void testReadCommands_withEmptyCommandsArray() throws IOException {
-        // Given
+    void testReadCommandsWithEmptyCommandsArray() throws IOException {
         String jsonContent = """
                 {
                     "commands": []
@@ -75,22 +71,18 @@ class CommandReaderTest {
         Path tempFile = Files.createTempFile("input", ".json");
         Files.writeString(tempFile, jsonContent);
 
-        // When
         List<Command> commands = CommandReader.readCommands(tempFile.toString());
 
-        // Then
         assertEquals(0, commands.size());
 
         Files.delete(tempFile);
     }
 
     @Test
-    void testReadCommands_withEmptyFile() throws IOException {
-        // Given
+    void testReadCommandsWithEmptyFile() throws IOException {
         Path tempFile = Files.createTempFile("input", ".json");
         Files.writeString(tempFile, "");
 
-        // When
         Exception exception = assertThrows(IOException.class, () -> {
             try {
                 CommandReader.readCommands(tempFile.toString());
@@ -99,13 +91,11 @@ class CommandReaderTest {
             }
         });
 
-        // Then
         assertTrue(exception.getMessage().contains("No content"));
     }
 
     @Test
-    void testReadCommands_withInvalidJsonFormat() throws IOException {
-        // Given
+    void testReadCommandsWithInvalidJsonFormat() throws IOException {
         String invalidJsonContent = """
         {
             "commands": [
@@ -118,7 +108,6 @@ class CommandReaderTest {
         Path tempFile = Files.createTempFile("input", ".json");
         Files.writeString(tempFile, invalidJsonContent);
 
-        // When
         Exception exception = assertThrows(IOException.class, () -> {
             try {
                 CommandReader.readCommands(tempFile.toString());
@@ -127,13 +116,11 @@ class CommandReaderTest {
             }
         });
 
-        // Then
         assertTrue(exception.getMessage().contains("Unexpected end-of-input"));
     }
 
     @Test
     void testReadCommands_withInvalidJsonFormat2() throws IOException {
-        // Given
         String invalidJsonFormat = """
                 {
                     "invalidField": "invalidValue"
@@ -143,7 +130,6 @@ class CommandReaderTest {
         Path tempFile = Files.createTempFile("input", ".json");
         Files.writeString(tempFile, invalidJsonFormat);
 
-        // When
         Exception exception = assertThrows(IOException.class, () -> {
             try {
                 CommandReader.readCommands(tempFile.toString());
@@ -152,7 +138,6 @@ class CommandReaderTest {
             }
         });
 
-        // Then
         assertTrue(
                 exception.getMessage().contains("Cannot deserialize") ||
                 exception.getMessage().contains("Unrecognized field")
