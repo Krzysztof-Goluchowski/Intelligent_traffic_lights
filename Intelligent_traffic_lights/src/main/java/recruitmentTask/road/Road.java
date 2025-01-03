@@ -7,7 +7,10 @@ import java.util.Queue;
 
 public class Road {
     private final Queue<Vehicle> vehicles;
+
     private final Direction name;
+
+    private int vehicleCount = 0;
 
     public Road(Direction direction) {
         this.vehicles = new LinkedList<>();
@@ -16,6 +19,7 @@ public class Road {
 
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
+        vehicleCount++;
     }
 
     public Vehicle removeVehicle() {
@@ -23,6 +27,7 @@ public class Road {
         if (vehicle == null) {
             return null;
         }
+        vehicleCount--;
         return vehicle;
     }
 
@@ -31,7 +36,7 @@ public class Road {
     }
 
     public int getVehicleCount() {
-        return vehicles.size();
+        return vehicleCount;
     }
 
     public Direction getName() {
