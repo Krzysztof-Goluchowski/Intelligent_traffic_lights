@@ -24,10 +24,7 @@ public class Road {
 
     public Vehicle removeVehicle() {
         Vehicle vehicle = vehicles.poll();
-        if (vehicle == null) {
-            return null;
-        }
-        vehicleCount--;
+        vehicleCount = Math.max(--vehicleCount, 0);
         return vehicle;
     }
 

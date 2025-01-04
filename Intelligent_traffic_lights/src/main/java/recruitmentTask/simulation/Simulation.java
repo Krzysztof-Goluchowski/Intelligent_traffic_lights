@@ -21,10 +21,7 @@ public class Simulation {
 
     public void run() {
         for (Command command : commands) {
-            switch (command.getCommandType()) {
-                case step -> intersectionManager.step();
-                case addVehicle -> intersectionManager.addVehicle(command);
-            }
+            command.execute(intersectionManager);
         }
     }
 

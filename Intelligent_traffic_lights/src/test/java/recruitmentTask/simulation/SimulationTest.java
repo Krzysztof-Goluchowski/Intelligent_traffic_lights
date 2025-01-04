@@ -2,13 +2,18 @@ package recruitmentTask.simulation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import recruitmentTask.command.AddVehicleCommand;
 import recruitmentTask.command.Command;
 import recruitmentTask.command.CommandType;
+import recruitmentTask.command.StepCommand;
+import recruitmentTask.intersection.IntersectionManager;
 import recruitmentTask.road.Direction;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class SimulationTest {
 
@@ -19,12 +24,32 @@ class SimulationTest {
         simulation = new Simulation(List.of());
     }
 
-    private Command createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
-        return new Command(CommandType.addVehicle, vehicleId, start, end);
+    private AddVehicleCommand createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
+        return new AddVehicleCommand(vehicleId, start, end);
     }
 
-    private Command createStepCommand() {
-        return new Command(CommandType.step);
+    private StepCommand createStepCommand() {
+        return new StepCommand();
+    }
+
+    @Test
+    void testStepCommand() {
+        IntersectionManager manager = mock(IntersectionManager.class);
+        StepCommand stepCommand = createStepCommand();
+
+        stepCommand.execute(manager);
+
+        verify(manager).step();
+    }
+
+    @Test
+    void testAddVehicleCommand() {
+        IntersectionManager manager = mock(IntersectionManager.class);
+        AddVehicleCommand addVehicleCommand = createAddVehicleCommand("V1", Direction.north, Direction.east);
+
+        addVehicleCommand.execute(manager);
+
+        verify(manager).addVehicle(addVehicleCommand);
     }
 
     @Test
@@ -57,7 +82,7 @@ class SimulationTest {
 
     @Test
     void testNoVehicles() {
-        Command stepCommand = new Command(CommandType.step);
+        StepCommand stepCommand = createStepCommand();
 
         simulation = new Simulation(List.of(stepCommand));
         simulation.run();

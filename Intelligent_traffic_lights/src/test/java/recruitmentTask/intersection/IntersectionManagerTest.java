@@ -2,6 +2,7 @@ package recruitmentTask.intersection;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import recruitmentTask.command.AddVehicleCommand;
 import recruitmentTask.command.Command;
 import recruitmentTask.command.CommandType;
 import recruitmentTask.road.Direction;
@@ -26,13 +27,13 @@ class IntersectionManagerTest {
         this.manager = new IntersectionManager(intersectionController, stepStatuses);
     }
 
-    private Command createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
-        return new Command(CommandType.addVehicle, vehicleId, start, end);
+    private AddVehicleCommand createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
+        return new AddVehicleCommand(vehicleId, start, end);
     }
 
     @Test
     void testAddVehicle() {
-        Command addVehicle = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        AddVehicleCommand addVehicle = createAddVehicleCommand("V1", Direction.north, Direction.south);
 
         manager.addVehicle(addVehicle);
 
@@ -44,7 +45,7 @@ class IntersectionManagerTest {
 
     @Test
     void testLightChange() {
-        Command addVehicle = createAddVehicleCommand("V1", Direction.west, Direction.east);
+        AddVehicleCommand addVehicle = createAddVehicleCommand("V1", Direction.west, Direction.east);
         verifyInitialTrafficLightState();
 
         manager.addVehicle(addVehicle);
@@ -69,8 +70,8 @@ class IntersectionManagerTest {
 
     @Test
     void testMoveVehicles() {
-        Command addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
-        Command addVehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.north);
+        AddVehicleCommand addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        AddVehicleCommand addVehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.north);
 
         manager.addVehicle(addVehicle1);
         manager.addVehicle(addVehicle2);
@@ -89,8 +90,8 @@ class IntersectionManagerTest {
 
     @Test
     void testNoPriorityWhenTurningLeft() {
-        Command addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
-        Command addVehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.west);
+        AddVehicleCommand addVehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        AddVehicleCommand addVehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.west);
 
         manager.addVehicle(addVehicle1);
         manager.addVehicle(addVehicle2);

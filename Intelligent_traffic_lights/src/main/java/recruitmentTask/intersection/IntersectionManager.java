@@ -1,5 +1,6 @@
 package recruitmentTask.intersection;
 
+import recruitmentTask.command.AddVehicleCommand;
 import recruitmentTask.command.Command;
 import recruitmentTask.road.Direction;
 import recruitmentTask.road.Road;
@@ -31,7 +32,7 @@ public class IntersectionManager {
         return roads;
     }
 
-    public void addVehicle(Command command) {
+    public void addVehicle(AddVehicleCommand command) {
         Vehicle vehicle = VehicleFactory.create(command);
         roads.get(command.getStartRoad()).addVehicle(vehicle);
     }
@@ -101,16 +102,12 @@ public class IntersectionManager {
             return;
         }
 
-        Direction opositeDirection = getOpositeDirection(vehiclesAtIntersection.getFirst().startRoad());
+        Direction opositeDirection = Direction.getOpositeDirection(vehiclesAtIntersection.getFirst().startRoad());
         Vehicle vehicle = roads.get(opositeDirection).removeVehicle();
 
         if (vehicle != null) {
             vehiclesAtIntersection.add(vehicle);
         }
-    }
-
-    private Direction getOpositeDirection(Direction direction) {
-        return Direction.getOpositeDirection(direction);
     }
 
     private List<String> exitIntersection() {

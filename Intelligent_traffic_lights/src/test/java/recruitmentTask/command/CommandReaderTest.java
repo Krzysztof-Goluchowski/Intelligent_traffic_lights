@@ -42,20 +42,20 @@ class CommandReaderTest {
         List<Command> commands = CommandReader.readCommands(tempFile.toString());
 
         assertEquals(3, commands.size());
-        assertEquals(CommandType.addVehicle, commands.get(0).getCommandType());
-        assertEquals("vehicle1", commands.get(0).getVehicleId());
-        assertEquals(Direction.north, commands.get(0).getStartRoad());
-        assertEquals(Direction.south, commands.get(0).getEndRoad());
 
-        assertEquals(CommandType.step, commands.get(1).getCommandType());
-        assertNull(commands.get(1).getVehicleId());
-        assertNull(commands.get(1).getStartRoad());
-        assertNull(commands.get(1).getEndRoad());
+        assertInstanceOf(AddVehicleCommand.class, commands.get(0));
+        AddVehicleCommand addVehicle1 = (AddVehicleCommand) commands.get(0);
+        assertEquals("vehicle1", addVehicle1.getVehicleId());
+        assertEquals(Direction.north, addVehicle1.getStartRoad());
+        assertEquals(Direction.south, addVehicle1.getEndRoad());
 
-        assertEquals(CommandType.addVehicle, commands.get(2).getCommandType());
-        assertEquals("vehicle2", commands.get(2).getVehicleId());
-        assertEquals(Direction.west, commands.get(2).getStartRoad());
-        assertEquals(Direction.east, commands.get(2).getEndRoad());
+        assertInstanceOf(StepCommand.class, commands.get(1));
+
+        assertInstanceOf(AddVehicleCommand.class, commands.get(2));
+        AddVehicleCommand addVehicle2 = (AddVehicleCommand) commands.get(2);
+        assertEquals("vehicle2", addVehicle2.getVehicleId());
+        assertEquals(Direction.west, addVehicle2.getStartRoad());
+        assertEquals(Direction.east, addVehicle2.getEndRoad());
 
         Files.delete(tempFile);
     }
