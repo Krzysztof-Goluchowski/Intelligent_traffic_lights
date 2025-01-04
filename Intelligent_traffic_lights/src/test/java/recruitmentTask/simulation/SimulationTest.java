@@ -8,6 +8,7 @@ import recruitmentTask.command.CommandType;
 import recruitmentTask.command.StepCommand;
 import recruitmentTask.intersection.IntersectionManager;
 import recruitmentTask.road.Direction;
+import recruitmentTask.vehicle.Vehicle;
 
 import java.util.List;
 
@@ -60,9 +61,9 @@ class SimulationTest {
         Simulation simulation = new Simulation(List.of(command1, command2));
         simulation.run();
 
-        List<List<String>> statuses = simulation.getStepStatuses();
+        List<StepStatus> statuses = simulation.getStepStatuses();
         assertEquals(1, statuses.size());
-        assertEquals(List.of("V1"), statuses.get(0));
+        assertEquals(List.of("V1"), statuses.getFirst().getLeftVehicles());
     }
 
     @Test
@@ -73,10 +74,10 @@ class SimulationTest {
         simulation = new Simulation(List.of(addVehicle, step, step));
         simulation.run();
 
-        List<List<String>> statuses = simulation.getStepStatuses();
+        List<StepStatus> statuses = simulation.getStepStatuses();
 
         assertEquals(2, statuses.size());
-        assertEquals(List.of("V1"), statuses.get(0));
+        assertEquals(List.of("V1"), statuses.get(0).getLeftVehicles());
         assertTrue(statuses.get(1).isEmpty());
     }
 
@@ -88,7 +89,7 @@ class SimulationTest {
         simulation.run();
 
         assertEquals(1, simulation.getStepStatuses().size());
-        assertTrue(simulation.getStepStatuses().get(0).isEmpty());
+        assertTrue(simulation.getStepStatuses().getFirst().isEmpty());
     }
 
     @Test
@@ -111,15 +112,15 @@ class SimulationTest {
         simulation = new Simulation(commands);
         simulation.run();
 
-        List<List<String>> statuses = simulation.getStepStatuses();
+        List<StepStatus> statuses = simulation.getStepStatuses();
 
-        assertEquals(List.of("V1"), statuses.get(0), "First vehicle from the north should pass.");
-        assertEquals(List.of("V2"), statuses.get(1), "Second vehicle from the north should pass.");
-        assertEquals(List.of("V3"), statuses.get(2), "Third vehicle from the north should pass.");
+        assertEquals(List.of("V1"), statuses.get(0).getLeftVehicles(), "First vehicle from the north should pass.");
+        assertEquals(List.of("V2"), statuses.get(1).getLeftVehicles(), "Second vehicle from the north should pass.");
+        assertEquals(List.of("V3"), statuses.get(2).getLeftVehicles(), "Third vehicle from the north should pass.");
 
-        assertEquals(List.of("V4"), statuses.get(3), "Vehicle turning left (V4) should pass next.");
-        assertEquals(List.of("V5"), statuses.get(4), "Vehicle behind V4 should pass after it.");
-        assertEquals(List.of("V6"), statuses.get(5), "Next vehicle from the south should pass last.");
+        assertEquals(List.of("V4"), statuses.get(3).getLeftVehicles(), "Vehicle turning left (V4) should pass next.");
+        assertEquals(List.of("V5"), statuses.get(4).getLeftVehicles(), "Vehicle behind V4 should pass after it.");
+        assertEquals(List.of("V6"), statuses.get(5).getLeftVehicles(), "Next vehicle from the south should pass last.");
     }
 
     @Test
@@ -143,14 +144,14 @@ class SimulationTest {
         simulation = new Simulation(commands);
         simulation.run();
 
-        List<List<String>> statuses = simulation.getStepStatuses();
+        List<StepStatus> statuses = simulation.getStepStatuses();
 
-        assertEquals(List.of("V1", "V4"), statuses.get(0), "First vehicle from the north and first from the south should pass.");
-        assertEquals(List.of("V2"), statuses.get(1), "Second vehicle from the north should pass.");
-        assertEquals(List.of("V3"), statuses.get(2), "Third vehicle from the north should pass.");
+        assertEquals(List.of("V1", "V4"), statuses.get(0).getLeftVehicles(), "First vehicle from the north and first from the south should pass.");
+        assertEquals(List.of("V2"), statuses.get(1).getLeftVehicles(), "Second vehicle from the north should pass.");
+        assertEquals(List.of("V3"), statuses.get(2).getLeftVehicles(), "Third vehicle from the north should pass.");
 
-        assertEquals(List.of("V5"), statuses.get(3), "V5 should pass next.");
-        assertEquals(List.of("V6"), statuses.get(4), "Next vehicle from the south should pass after V5.");
+        assertEquals(List.of("V5"), statuses.get(3).getLeftVehicles(), "V5 should pass next.");
+        assertEquals(List.of("V6"), statuses.get(4).getLeftVehicles(), "Next vehicle from the south should pass after V5.");
         assertTrue(statuses.get(5).isEmpty(), "No vehicles should remain after all have passed.");
     }
 }

@@ -9,7 +9,7 @@ import java.util.*;
 public class Simulation {
     private final TrafficLightController lightController;
     private final IntersectionManager intersectionManager;
-    private final List<List<String>> stepStatuses;
+    private final List<StepStatus> stepStatuses;
     private final List<Command> commands;
 
     public Simulation(List<Command> commands) {
@@ -25,7 +25,7 @@ public class Simulation {
         }
     }
 
-    public List<List<String>> getStepStatuses() {
+    public List<StepStatus> getStepStatuses() {
         return stepStatuses;
     }
 

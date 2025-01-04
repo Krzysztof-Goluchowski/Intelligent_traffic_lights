@@ -4,6 +4,7 @@ import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.command.AddVehicleCommand;
 import recruitmentTask.road.Direction;
 import recruitmentTask.road.Road;
+import recruitmentTask.simulation.StepStatus;
 import recruitmentTask.vehicle.Vehicle;
 import recruitmentTask.vehicle.VehicleFactory;
 
@@ -14,11 +15,11 @@ import java.util.Map;
 
 public class IntersectionManager {
     private final TrafficLightController lightController;
-    private final List<List<String>> stepStatuses;
+    private final List<StepStatus> stepStatuses;
     private final Map<Direction, Road> roads;
     private final List<Vehicle> vehiclesAtIntersection = new ArrayList<>();
 
-    public IntersectionManager(TrafficLightController lightController, List<List<String>> stepStatuses) {
+    public IntersectionManager(TrafficLightController lightController, List<StepStatus> stepStatuses) {
         this.lightController = lightController;
         this.stepStatuses = stepStatuses;
         this.roads = initializeRoads();
@@ -43,9 +44,7 @@ public class IntersectionManager {
             lightController.handleTraffic(busyRoads);
             leaveIntersection();
         }
-        List<String> leftVehicles = moveVehicles(busyRoads);
-
-        recordStepStatus(leftVehicles);
+        moveVehicles(busyRoads);
     }
 
     private List<Direction> getBusyRoads() {
@@ -69,19 +68,17 @@ public class IntersectionManager {
 
     private void leaveIntersection() {
         for (Vehicle vehicle : vehiclesAtIntersection) {
-            stepStatuses.getLast().add(vehicle.vehicleId());
+            stepStatuses.getLast().addVehicle(vehicle);
         }
 
         vehiclesAtIntersection.clear();
     }
 
-    private List<String> moveVehicles(List<Direction> directions) {
-        List<String> leftVehicles = new ArrayList<>();
-
+    private void moveVehicles(List<Direction> directions) {
         enterIntersection(directions);
-        leftVehicles.addAll(exitIntersection());
+        List<Vehicle> leftVehicles = exitIntersection();
 
-        return leftVehicles;
+        recordStepStatus(leftVehicles);
     }
 
     private void enterIntersection(List<Direction> directions) {
@@ -110,22 +107,22 @@ public class IntersectionManager {
         }
     }
 
-    private List<String> exitIntersection() {
-        List<String> leftVehicles = new ArrayList<>();
+    private List<Vehicle> exitIntersection() {
+        List<Vehicle> leftVehicles = new ArrayList<>();
 
         if (vehiclesAtIntersection.size() == 1) {
-            leftVehicles.add(vehiclesAtIntersection.getFirst().vehicleId());
+            leftVehicles.add(vehiclesAtIntersection.getFirst());
             vehiclesAtIntersection.clear();
         }
 
         if (vehiclesAtIntersection.size() == 2) {
-            leftVehicles.addAll(resolveIntersection());
+            leftVehicles = resolveIntersection();
         }
 
         return leftVehicles;
     }
 
-    private List<String> resolveIntersection() {
+    private List<Vehicle> resolveIntersection() {
         Vehicle vehicle1 = vehiclesAtIntersection.get(0);
         Vehicle vehicle2 = vehiclesAtIntersection.get(1);
 
@@ -135,15 +132,15 @@ public class IntersectionManager {
         if (priority1 && priority2 || !priority1 && !priority2) {
             vehiclesAtIntersection.remove(vehicle1);
             vehiclesAtIntersection.remove(vehicle2);
-            return List.of(vehicle1.vehicleId(), vehicle2.vehicleId());
+            return List.of(vehicle1, vehicle2);
         }
 
         if (priority1) {
             vehiclesAtIntersection.remove(vehicle1);
-            return List.of(vehicle1.vehicleId());
+            return List.of(vehicle1);
         } else {
             vehiclesAtIntersection.remove(vehicle2);
-            return List.of(vehicle2.vehicleId());
+            return List.of(vehicle2);
         }
     }
 
@@ -151,11 +148,11 @@ public class IntersectionManager {
         return !Direction.isTurningLeft(vehicle.startRoad(), vehicle.endRoad());
     }
 
-    private void recordStepStatus(List<String> leftVehicles) {
-        stepStatuses.add(leftVehicles);
+    private void recordStepStatus(List<Vehicle> leftVehicles) {
+        stepStatuses.add(new StepStatus(leftVehicles));
     }
 
-    public List<List<String>> getStepStatuses() {
+    public List<StepStatus> getStepStatuses() {
         return stepStatuses;
     }
 

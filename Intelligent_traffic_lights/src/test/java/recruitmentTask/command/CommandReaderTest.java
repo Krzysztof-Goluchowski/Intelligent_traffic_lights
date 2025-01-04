@@ -43,8 +43,8 @@ class CommandReaderTest {
 
         assertEquals(3, commands.size());
 
-        assertInstanceOf(AddVehicleCommand.class, commands.get(0));
-        AddVehicleCommand addVehicle1 = (AddVehicleCommand) commands.get(0);
+        assertInstanceOf(AddVehicleCommand.class, commands.getFirst());
+        AddVehicleCommand addVehicle1 = (AddVehicleCommand) commands.getFirst();
         assertEquals("vehicle1", addVehicle1.getVehicleId());
         assertEquals(Direction.north, addVehicle1.getStartRoad());
         assertEquals(Direction.south, addVehicle1.getEndRoad());

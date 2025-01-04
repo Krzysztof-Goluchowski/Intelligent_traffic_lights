@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.command.AddVehicleCommand;
 import recruitmentTask.road.Direction;
+import recruitmentTask.simulation.StepStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ class IntersectionManagerTest {
 
     private TrafficLightController lightController;
 
-    private List<List<String>> stepStatuses;
+    private List<StepStatus> stepStatuses;
 
     private IntersectionManager manager;
 
@@ -76,9 +77,9 @@ class IntersectionManagerTest {
         manager.addVehicle(addVehicle2);
         manager.step();
 
-        List<List<String>> statuses = manager.getStepStatuses();
+        List<StepStatus> statuses = manager.getStepStatuses();
 
-        assertEquals(List.of("V1", "V2"), statuses.getFirst());
+        assertEquals(List.of("V1", "V2"), statuses.getFirst().getLeftVehicles());
     }
 
     @Test
@@ -96,11 +97,11 @@ class IntersectionManagerTest {
         manager.addVehicle(addVehicle2);
 
         manager.step();
-        assertEquals(List.of("V1"), stepStatuses.get(0));
+        assertEquals(List.of("V1"), stepStatuses.getFirst().getLeftVehicles());
         assertEquals(1, manager.getVehiclesAtIntersection().size());
 
         manager.step();
-        assertEquals(List.of("V2"), stepStatuses.get(1));
+        assertEquals(List.of("V2"), stepStatuses.get(1).getLeftVehicles());
     }
 
     @Test
@@ -123,7 +124,7 @@ class IntersectionManagerTest {
 
     private void verifyPriorityStep(int stepIndex, List<String> expectedVehicles) {
         manager.step();
-        assertEquals(expectedVehicles, stepStatuses.get(stepIndex), "Both vehicles should leave the intersection since they have equal priority");
+        assertEquals(expectedVehicles, stepStatuses.get(stepIndex).getLeftVehicles(), "Both vehicles should leave the intersection since they have equal priority");
     }
 
     @Test
@@ -131,7 +132,7 @@ class IntersectionManagerTest {
         setupInitialVehicles();
         performSimulationSteps();
 
-        List<List<String>> statuses = manager.getStepStatuses();
+        List<StepStatus> statuses = manager.getStepStatuses();
 
         verifyStatuses(statuses);
     }
@@ -152,10 +153,10 @@ class IntersectionManagerTest {
         manager.step();
     }
 
-    private void verifyStatuses(List<List<String>> statuses) {
-        assertEquals(List.of("V1"), statuses.get(0), "At step 0, V1 should pass the intersection.");
-        assertEquals(List.of("V2"), statuses.get(1), "At step 1, V2 should pass the intersection.");
-        assertEquals(List.of("V3", "V4"), statuses.get(2), "At step 2, V3 and V4 should pass.");
-        assertEquals(List.of("V5", "V6"), statuses.get(3), "At step 3, V5 and V6 should pass after the light changes.");
+    private void verifyStatuses(List<StepStatus> statuses) {
+        assertEquals(List.of("V1"), statuses.get(0).getLeftVehicles(), "At step 0, V1 should pass the intersection.");
+        assertEquals(List.of("V2"), statuses.get(1).getLeftVehicles(), "At step 1, V2 should pass the intersection.");
+        assertEquals(List.of("V3", "V4"), statuses.get(2).getLeftVehicles(), "At step 2, V3 and V4 should pass.");
+        assertEquals(List.of("V5", "V6"), statuses.get(3).getLeftVehicles(), "At step 3, V5 and V6 should pass after the light changes.");
     }
 }

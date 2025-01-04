@@ -1,10 +1,7 @@
-package recruitmentTask.intersection;
+package recruitmentTask.TrafficLight;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import recruitmentTask.TrafficLight.TrafficLight;
-import recruitmentTask.TrafficLight.TrafficLightController;
-import recruitmentTask.TrafficLight.TrafficLightState;
 import recruitmentTask.road.Direction;
 
 import java.util.List;
