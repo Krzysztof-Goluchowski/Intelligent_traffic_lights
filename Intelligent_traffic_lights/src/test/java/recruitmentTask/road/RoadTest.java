@@ -48,6 +48,7 @@ class RoadTest {
     void testRemoveVehicleFromEmptyRoad() {
         Vehicle removedVehicleId = road.removeVehicle();
         assertNull(removedVehicleId);
+        assertEquals(0, road.getVehicleCount());
     }
 
     @Test

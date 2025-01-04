@@ -9,7 +9,7 @@ import java.util.List;
 
 public class IntelligentTrafficLights {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        System.out.println("Application starts");
 
         String inFile = args[0];
         String outFile = args[1];
@@ -26,5 +26,9 @@ public class IntelligentTrafficLights {
 
         Simulation simulation = new Simulation(commands);
         simulation.run();
+
+        System.out.println(simulation.getStepStatuses());
+
+        System.out.println("Application ends");
     }
 }
