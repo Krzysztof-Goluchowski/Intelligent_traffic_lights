@@ -27,6 +27,8 @@ public class IntelligentTrafficLights {
         Simulation simulation = new Simulation(commands);
         simulation.run();
 
+        System.out.println(simulation.getStepStatuses());
+
         System.out.println("Application ends");
     }
 }

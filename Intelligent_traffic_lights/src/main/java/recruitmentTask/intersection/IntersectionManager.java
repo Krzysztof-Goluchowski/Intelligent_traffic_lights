@@ -18,11 +18,15 @@ public class IntersectionManager {
     private final List<StepStatus> stepStatuses;
     private final Map<Direction, Road> roads;
     private final List<Vehicle> vehiclesAtIntersection = new ArrayList<>();
+    private int currentAxisGreenDuration;
+    private List<Direction> currentAxis;
 
     public IntersectionManager(TrafficLightController lightController, List<StepStatus> stepStatuses) {
         this.lightController = lightController;
         this.stepStatuses = stepStatuses;
         this.roads = initializeRoads();
+        currentAxisGreenDuration = 0;
+        this.currentAxis = Direction.northSouth();
     }
 
     private Map<Direction, Road> initializeRoads() {
@@ -41,10 +45,17 @@ public class IntersectionManager {
     public void step() {
         List<Direction> busyRoads = getBusyRoads();
         if (isNeedForChange(busyRoads)) {
-            lightController.handleTraffic(busyRoads);
+            List<Direction> perpendicularRoads = Direction.getPerpendicularRoads(currentAxis);
+            lightController.handleTraffic(perpendicularRoads);
+
+            currentAxisGreenDuration = 0;
+            currentAxis = perpendicularRoads;
+
             leaveIntersection();
         }
-        moveVehicles(busyRoads);
+        moveVehicles(currentAxis);
+
+        currentAxisGreenDuration++;
     }
 
     private List<Direction> getBusyRoads() {
@@ -63,6 +74,9 @@ public class IntersectionManager {
     }
 
     private boolean isNeedForChange(List<Direction> directions) {
+        if (currentAxisGreenDuration >= 9) {
+            return true;
+        }
         return !lightController.isGreenOn(directions.getFirst());
     }
 

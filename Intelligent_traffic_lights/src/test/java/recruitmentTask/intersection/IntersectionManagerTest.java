@@ -45,23 +45,24 @@ class IntersectionManagerTest {
 
     @Test
     void testLightChange() {
+        verifyNorthSouthLightState();
+
         AddVehicleCommand addVehicle = createAddVehicleCommand("V1", Direction.west, Direction.east);
-        verifyInitialTrafficLightState();
 
         manager.addVehicle(addVehicle);
         manager.step();
 
-        verifyUpdatedTrafficLightState();
+        verifyWestEastLightState();
     }
 
-    private void verifyInitialTrafficLightState() {
+    private void verifyNorthSouthLightState() {
         assertFalse(lightController.isGreenOn(Direction.west), "West light should be red initially.");
         assertFalse(lightController.isGreenOn(Direction.east), "East light should be red initially.");
         assertTrue(lightController.isGreenOn(Direction.north), "North light should be green initially.");
         assertTrue(lightController.isGreenOn(Direction.south), "South light should be green initially.");
     }
 
-    private void verifyUpdatedTrafficLightState() {
+    private void verifyWestEastLightState() {
         assertTrue(lightController.isGreenOn(Direction.west), "West light should be green after step.");
         assertTrue(lightController.isGreenOn(Direction.east), "East light should be green after step.");
         assertFalse(lightController.isGreenOn(Direction.north), "North light should be red after step.");
@@ -158,5 +159,47 @@ class IntersectionManagerTest {
         assertEquals(List.of("V2"), statuses.get(1).getLeftVehicles(), "At step 1, V2 should pass the intersection.");
         assertEquals(List.of("V3", "V4"), statuses.get(2).getLeftVehicles(), "At step 2, V3 and V4 should pass.");
         assertEquals(List.of("V5", "V6"), statuses.get(3).getLeftVehicles(), "At step 3, V5 and V6 should pass after the light changes.");
+    }
+
+    @Test
+    void testChangeLightAfterTenSteps() {
+        verifyNorthSouthLightState();
+
+        performSteps(10);
+
+        verifyWestEastLightState();
+
+        // Perform one more step, lights should return to the initial prioritized direction
+        manager.step();
+        verifyNorthSouthLightState();
+    }
+
+    @Test
+    void testLightRemainsUnchangedWhenSwitchOccursDuringSteps() {
+        verifyNorthSouthLightState();
+
+        AddVehicleCommand vehicle1 = createAddVehicleCommand("V1", Direction.east, Direction.west);
+        AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.west, Direction.east);
+
+        performSteps(5);
+        manager.addVehicle(vehicle1);
+        manager.addVehicle(vehicle2);
+
+        // After adding vehicles and stepping, the light should switch to WEST-EAST, it's busier.
+        manager.step();
+        verifyWestEastLightState();
+
+        performSteps(4);
+
+        // At this point (10th step), no further light switch is needed,
+        // as the light already switched during the steps to accommodate EAST-WEST traffic.
+        // The green light should return to the NORTH-SOUTH axis based on prioritization.
+        verifyNorthSouthLightState();
+    }
+
+    private void performSteps(int numOfSteps) {
+        for (int i = 0; i < numOfSteps; i++) {
+            manager.step();
+        }
     }
 }
