@@ -202,4 +202,19 @@ class IntersectionManagerTest {
             manager.step();
         }
     }
+
+    @Test
+    void testUTurnAtIntersection() {
+        AddVehicleCommand uTurnVehicleCommand = createAddVehicleCommand("V1", Direction.north, Direction.north);
+        AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.north);
+
+        manager.addVehicle(uTurnVehicleCommand);
+        manager.addVehicle(vehicle2);
+
+        manager.step();
+        assertEquals(List.of("V2"), stepStatuses.getFirst().getLeftVehicles());
+
+        manager.step();
+        assertEquals(List.of("V1"), stepStatuses.get(1).getLeftVehicles());
+    }
 }
