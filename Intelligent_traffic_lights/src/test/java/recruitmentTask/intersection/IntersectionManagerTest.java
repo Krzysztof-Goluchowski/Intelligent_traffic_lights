@@ -2,9 +2,8 @@ package recruitmentTask.intersection;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.command.AddVehicleCommand;
-import recruitmentTask.command.Command;
-import recruitmentTask.command.CommandType;
 import recruitmentTask.road.Direction;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IntersectionManagerTest {
 
-    private IntersectionController intersectionController;
+    private TrafficLightController lightController;
 
     private List<List<String>> stepStatuses;
 
@@ -22,9 +21,9 @@ class IntersectionManagerTest {
 
     @BeforeEach
     void setUp() {
-        this.intersectionController = new IntersectionController();
+        this.lightController = new TrafficLightController();
         this.stepStatuses = new ArrayList<>();
-        this.manager = new IntersectionManager(intersectionController, stepStatuses);
+        this.manager = new IntersectionManager(lightController, stepStatuses);
     }
 
     private AddVehicleCommand createAddVehicleCommand(String vehicleId, Direction start, Direction end) {
@@ -55,17 +54,17 @@ class IntersectionManagerTest {
     }
 
     private void verifyInitialTrafficLightState() {
-        assertFalse(intersectionController.isGreenOn(Direction.west), "West light should be red initially.");
-        assertFalse(intersectionController.isGreenOn(Direction.east), "East light should be red initially.");
-        assertTrue(intersectionController.isGreenOn(Direction.north), "North light should be green initially.");
-        assertTrue(intersectionController.isGreenOn(Direction.south), "South light should be green initially.");
+        assertFalse(lightController.isGreenOn(Direction.west), "West light should be red initially.");
+        assertFalse(lightController.isGreenOn(Direction.east), "East light should be red initially.");
+        assertTrue(lightController.isGreenOn(Direction.north), "North light should be green initially.");
+        assertTrue(lightController.isGreenOn(Direction.south), "South light should be green initially.");
     }
 
     private void verifyUpdatedTrafficLightState() {
-        assertTrue(intersectionController.isGreenOn(Direction.west), "West light should be green after step.");
-        assertTrue(intersectionController.isGreenOn(Direction.east), "East light should be green after step.");
-        assertFalse(intersectionController.isGreenOn(Direction.north), "North light should be red after step.");
-        assertFalse(intersectionController.isGreenOn(Direction.south), "South light should be red after step.");
+        assertTrue(lightController.isGreenOn(Direction.west), "West light should be green after step.");
+        assertTrue(lightController.isGreenOn(Direction.east), "East light should be green after step.");
+        assertFalse(lightController.isGreenOn(Direction.north), "North light should be red after step.");
+        assertFalse(lightController.isGreenOn(Direction.south), "South light should be red after step.");
     }
 
     @Test

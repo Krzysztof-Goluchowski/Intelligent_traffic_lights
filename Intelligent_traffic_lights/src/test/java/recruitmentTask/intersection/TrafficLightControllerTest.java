@@ -3,6 +3,7 @@ package recruitmentTask.intersection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import recruitmentTask.TrafficLight.TrafficLight;
+import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.TrafficLight.TrafficLightState;
 import recruitmentTask.road.Direction;
 
@@ -11,18 +12,18 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IntersectionControllerTest {
+class TrafficLightControllerTest {
 
-    private IntersectionController controller;
+    private TrafficLightController lightController;
 
     @BeforeEach
     void setUp() {
-        controller = new IntersectionController();
+        lightController = new TrafficLightController();
     }
 
     @Test
     void testInitialState() {
-        Map<Direction, TrafficLight> lights = controller.getTrafficLights();
+        Map<Direction, TrafficLight> lights = lightController.getTrafficLights();
 
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.north).getState());
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.south).getState());
@@ -35,9 +36,9 @@ class IntersectionControllerTest {
     void testHandleTraffic() {
         List<Direction> busyRoads = List.of(Direction.west, Direction.east);
 
-        controller.handleTraffic(busyRoads);
+        lightController.handleTraffic(busyRoads);
 
-        Map<Direction, TrafficLight> lights = controller.getTrafficLights();
+        Map<Direction, TrafficLight> lights = lightController.getTrafficLights();
 
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.east).getState());
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.west).getState());
@@ -48,10 +49,10 @@ class IntersectionControllerTest {
 
     @Test
     void testIsGreenOn() {
-        assertTrue(controller.isGreenOn(Direction.north));
-        assertTrue(controller.isGreenOn(Direction.south));
-        assertFalse(controller.isGreenOn(Direction.east));
-        assertFalse(controller.isGreenOn(Direction.west));
+        assertTrue(lightController.isGreenOn(Direction.north));
+        assertTrue(lightController.isGreenOn(Direction.south));
+        assertFalse(lightController.isGreenOn(Direction.east));
+        assertFalse(lightController.isGreenOn(Direction.west));
     }
 
     @Test
@@ -59,11 +60,11 @@ class IntersectionControllerTest {
         List<Direction> northSouth = Direction.northSouth();
         List<Direction> westEast = Direction.westEast();
 
-        controller.handleTraffic(westEast);
-        controller.handleTraffic(northSouth);
-        controller.handleTraffic(westEast);
+        lightController.handleTraffic(westEast);
+        lightController.handleTraffic(northSouth);
+        lightController.handleTraffic(westEast);
 
-        Map<Direction, TrafficLight> lights = controller.getTrafficLights();
+        Map<Direction, TrafficLight> lights = lightController.getTrafficLights();
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.east).getState());
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.west).getState());
 
@@ -75,18 +76,18 @@ class IntersectionControllerTest {
     void testChangeSameLightMultipleTimes() {
         List<Direction> westEast = Direction.westEast();
 
-        controller.handleTraffic(westEast);
+        lightController.handleTraffic(westEast);
         verifyWestEastLights();
 
-        controller.handleTraffic(westEast);
+        lightController.handleTraffic(westEast);
         verifyWestEastLights();
 
-        controller.handleTraffic(westEast);
+        lightController.handleTraffic(westEast);
         verifyWestEastLights();
     }
 
     private void verifyWestEastLights() {
-        Map<Direction, TrafficLight> lights = controller.getTrafficLights();
+        Map<Direction, TrafficLight> lights = lightController.getTrafficLights();
 
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.east).getState());
         assertEquals(TrafficLightState.GREEN, lights.get(Direction.west).getState());

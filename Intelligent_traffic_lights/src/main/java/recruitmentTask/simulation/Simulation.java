@@ -1,22 +1,22 @@
 package recruitmentTask.simulation;
 
-import recruitmentTask.intersection.IntersectionController;
+import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.command.Command;
 import recruitmentTask.intersection.IntersectionManager;
 
 import java.util.*;
 
 public class Simulation {
-    private final IntersectionController intersectionController;
+    private final TrafficLightController lightController;
     private final IntersectionManager intersectionManager;
     private final List<List<String>> stepStatuses;
     private final List<Command> commands;
 
     public Simulation(List<Command> commands) {
         this.commands = commands;
-        intersectionController = new IntersectionController();
+        lightController = new TrafficLightController();
         stepStatuses = new ArrayList<>();
-        this.intersectionManager = new IntersectionManager(intersectionController, stepStatuses);
+        this.intersectionManager = new IntersectionManager(lightController, stepStatuses);
     }
 
     public void run() {
@@ -33,7 +33,7 @@ public class Simulation {
         return commands;
     }
 
-    public IntersectionController getIntersectionController() {
-        return intersectionController;
+    public TrafficLightController getIntersectionController() {
+        return lightController;
     }
 }

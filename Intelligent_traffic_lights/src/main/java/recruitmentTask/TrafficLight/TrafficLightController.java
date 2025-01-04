@@ -1,17 +1,15 @@
-package recruitmentTask.intersection;
+package recruitmentTask.TrafficLight;
 
-import recruitmentTask.TrafficLight.TrafficLight;
-import recruitmentTask.TrafficLight.TrafficLightState;
 import recruitmentTask.road.Direction;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class IntersectionController {
+public class TrafficLightController {
     private final Map<Direction, TrafficLight> trafficLights;
 
-    public IntersectionController() {
+    public TrafficLightController() {
         trafficLights = new HashMap<>();
         trafficLights.put(Direction.north, new TrafficLight());
         trafficLights.put(Direction.south, new TrafficLight());

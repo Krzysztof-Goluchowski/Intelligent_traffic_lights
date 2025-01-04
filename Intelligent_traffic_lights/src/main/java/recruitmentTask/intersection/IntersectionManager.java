@@ -1,7 +1,7 @@
 package recruitmentTask.intersection;
 
+import recruitmentTask.TrafficLight.TrafficLightController;
 import recruitmentTask.command.AddVehicleCommand;
-import recruitmentTask.command.Command;
 import recruitmentTask.road.Direction;
 import recruitmentTask.road.Road;
 import recruitmentTask.vehicle.Vehicle;
@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 public class IntersectionManager {
-    private final IntersectionController intersectionController;
+    private final TrafficLightController lightController;
     private final List<List<String>> stepStatuses;
     private final Map<Direction, Road> roads;
     private final List<Vehicle> vehiclesAtIntersection = new ArrayList<>();
 
-    public IntersectionManager(IntersectionController intersectionController, List<List<String>> stepStatuses) {
-        this.intersectionController = intersectionController;
+    public IntersectionManager(TrafficLightController lightController, List<List<String>> stepStatuses) {
+        this.lightController = lightController;
         this.stepStatuses = stepStatuses;
         this.roads = initializeRoads();
     }
@@ -40,7 +40,7 @@ public class IntersectionManager {
     public void step() {
         List<Direction> busyRoads = getBusyRoads();
         if (isNeedForChange(busyRoads)) {
-            intersectionController.handleTraffic(busyRoads);
+            lightController.handleTraffic(busyRoads);
             leaveIntersection();
         }
         List<String> leftVehicles = moveVehicles(busyRoads);
@@ -64,7 +64,7 @@ public class IntersectionManager {
     }
 
     private boolean isNeedForChange(List<Direction> directions) {
-        return !intersectionController.isGreenOn(directions.getFirst());
+        return !lightController.isGreenOn(directions.getFirst());
     }
 
     private void leaveIntersection() {
