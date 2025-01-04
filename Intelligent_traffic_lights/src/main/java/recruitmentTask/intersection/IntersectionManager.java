@@ -51,7 +51,7 @@ public class IntersectionManager {
             currentAxisGreenDuration = 0;
             currentAxis = perpendicularRoads;
 
-            leaveIntersection();
+            clearIntersection();
         }
         moveVehicles(currentAxis);
 
@@ -77,10 +77,11 @@ public class IntersectionManager {
         if (currentAxisGreenDuration >= 9) {
             return true;
         }
+
         return !lightController.isGreenOn(directions.getFirst());
     }
 
-    private void leaveIntersection() {
+    private void clearIntersection() {
         for (Vehicle vehicle : vehiclesAtIntersection) {
             stepStatuses.getLast().addVehicle(vehicle);
         }
@@ -90,9 +91,7 @@ public class IntersectionManager {
 
     private void moveVehicles(List<Direction> directions) {
         enterIntersection(directions);
-        List<Vehicle> leftVehicles = exitIntersection();
-
-        recordStepStatus(leftVehicles);
+        exitIntersection();
     }
 
     private void enterIntersection(List<Direction> directions) {
@@ -100,40 +99,42 @@ public class IntersectionManager {
         Direction dir2 = directions.get(1);
 
         if (vehiclesAtIntersection.isEmpty()) {
-            Vehicle vehicle1 = roads.get(dir1).removeVehicle();
-            Vehicle vehicle2 = roads.get(dir2).removeVehicle();
-
-            if (vehicle1 != null) {
-                vehiclesAtIntersection.add(vehicle1);
-            }
-            if (vehicle2 != null) {
-                vehiclesAtIntersection.add(vehicle2);
-            }
-
-            return;
+            addVehiclesFromRoad(dir1);
+            addVehiclesFromRoad(dir2);
+        } else {
+            addVehicleFromOppositeDirection();
         }
+    }
 
-        Direction opositeDirection = Direction.getOpositeDirection(vehiclesAtIntersection.getFirst().startRoad());
-        Vehicle vehicle = roads.get(opositeDirection).removeVehicle();
+    private void addVehiclesFromRoad(Direction direction) {
+        Vehicle vehicle = roads.get(direction).removeVehicle();
+        addVehicleToIntersection(vehicle);
+    }
 
+    private void addVehicleFromOppositeDirection() {
+        Direction oppositeDirection = Direction.getOpositeDirection(vehiclesAtIntersection.getFirst().startRoad());
+        Vehicle vehicle = roads.get(oppositeDirection).removeVehicle();
+        addVehicleToIntersection(vehicle);
+    }
+
+    private void addVehicleToIntersection(Vehicle vehicle) {
         if (vehicle != null) {
             vehiclesAtIntersection.add(vehicle);
         }
     }
 
-    private List<Vehicle> exitIntersection() {
-        List<Vehicle> leftVehicles = new ArrayList<>();
+
+    private void exitIntersection() {
+        List<Vehicle> exitedVehicles = new ArrayList<>();
 
         if (vehiclesAtIntersection.size() == 1) {
-            leftVehicles.add(vehiclesAtIntersection.getFirst());
+            exitedVehicles.add(vehiclesAtIntersection.getFirst());
             vehiclesAtIntersection.clear();
+        } else if (vehiclesAtIntersection.size() == 2) {
+            exitedVehicles = resolveIntersection();
         }
 
-        if (vehiclesAtIntersection.size() == 2) {
-            leftVehicles = resolveIntersection();
-        }
-
-        return leftVehicles;
+        recordStepStatus(exitedVehicles);
     }
 
     private List<Vehicle> resolveIntersection() {
@@ -144,18 +145,16 @@ public class IntersectionManager {
         boolean priority2 = havePriority(vehicle2);
 
         if (priority1 && priority2 || !priority1 && !priority2) {
-            vehiclesAtIntersection.remove(vehicle1);
-            vehiclesAtIntersection.remove(vehicle2);
+            vehiclesAtIntersection.clear();
             return List.of(vehicle1, vehicle2);
         }
 
-        if (priority1) {
-            vehiclesAtIntersection.remove(vehicle1);
-            return List.of(vehicle1);
-        } else {
-            vehiclesAtIntersection.remove(vehicle2);
-            return List.of(vehicle2);
-        }
+        return priority1 ? removeVehicle(vehicle1) : removeVehicle(vehicle2);
+    }
+
+    private List<Vehicle> removeVehicle(Vehicle vehicle) {
+        vehiclesAtIntersection.remove(vehicle);
+        return List.of(vehicle);
     }
 
     private boolean havePriority(Vehicle vehicle) {

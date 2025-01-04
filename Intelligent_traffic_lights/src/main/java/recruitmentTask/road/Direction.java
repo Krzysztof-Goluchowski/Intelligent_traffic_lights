@@ -25,10 +25,10 @@ public enum Direction {
 
     public static boolean isTurningLeft(Direction startRoad, Direction endRoad) {
         return switch (startRoad) {
-            case south -> endRoad == west;
-            case north -> endRoad == east;
-            case west -> endRoad == north;
-            case east -> endRoad == south;
+            case south -> endRoad == west || endRoad == south;
+            case north -> endRoad == east || endRoad == north;
+            case west -> endRoad == north || endRoad == west;
+            case east -> endRoad == south || endRoad == east;
         };
     }
 
