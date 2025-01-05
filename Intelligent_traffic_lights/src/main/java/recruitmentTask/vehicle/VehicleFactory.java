@@ -1,7 +1,6 @@
 package recruitmentTask.vehicle;
 
 import recruitmentTask.command.AddVehicleCommand;
-import recruitmentTask.command.Command;
 
 public class VehicleFactory {
 

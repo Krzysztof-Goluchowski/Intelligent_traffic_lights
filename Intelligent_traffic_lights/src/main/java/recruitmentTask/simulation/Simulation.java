@@ -37,12 +37,14 @@ public class Simulation {
             command.execute(intersectionManager);
         }
 
-        if (outFile != null) {
-            writeStepStatusesToFile(outFile);
-        }
+        writeStepStatusesToFile(outFile);
     }
 
     private void writeStepStatusesToFile(String filename) {
+        if (filename == null) {
+            return;
+        }
+
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try (FileWriter writer = new FileWriter(filename)) {
             Map<String, List<StepStatus>> output = new HashMap<>();
