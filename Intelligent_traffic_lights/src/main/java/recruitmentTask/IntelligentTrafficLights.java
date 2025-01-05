@@ -11,6 +11,13 @@ public class IntelligentTrafficLights {
     public static void main(String[] args) {
         System.out.println("Application starts");
 
+        if (args.length != 2) {
+            System.out.println("Invalid arguments. Usage: ");
+            System.out.println("gradlew build");
+            System.out.println("gradlew run --args=\"input.json output.json\"");
+            return;
+        }
+
         String inFile = args[0];
         String outFile = args[1];
         System.out.println("Input file: " + inFile);
