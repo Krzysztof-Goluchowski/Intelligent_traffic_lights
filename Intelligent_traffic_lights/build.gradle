@@ -1,7 +1,10 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+application {
+    mainClass = 'recruitmentTask.IntelligentTrafficLights'
 }
 
 group = 'recruitmentTask'
@@ -21,22 +24,15 @@ tasks.withType(Test) {
     jvmArgs '-XX:+EnableDynamicAgentLoading'
 }
 
-
 dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'org.mockito:mockito-core:5.6.0'
 }
 
-application {
-    mainClass = 'recruitmentTask.IntelligentTrafficLights'
-}
-
 test {
     useJUnitPlatform()
-}
-
-tasks.named('shadowJar') {
-    archiveClassifier.set('all')
 }

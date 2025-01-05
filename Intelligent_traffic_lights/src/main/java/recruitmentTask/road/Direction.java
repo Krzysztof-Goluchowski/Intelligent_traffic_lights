@@ -25,11 +25,37 @@ public enum Direction {
 
     public static boolean isTurningLeft(Direction startRoad, Direction endRoad) {
         return switch (startRoad) {
-            case south -> endRoad == west || endRoad == south;
-            case north -> endRoad == east || endRoad == north;
-            case west -> endRoad == north || endRoad == west;
-            case east -> endRoad == south || endRoad == east;
+            case south -> endRoad == west;
+            case north -> endRoad == east;
+            case west -> endRoad == north;
+            case east -> endRoad == south;
         };
+    }
+
+    public static boolean isTurningRight(Direction startRoad, Direction endRoad) {
+        return switch (startRoad) {
+            case south -> endRoad == east;
+            case north -> endRoad == west;
+            case west -> endRoad == south;
+            case east -> endRoad == north;
+        };
+    }
+
+    public static boolean isOnTheRight(Direction dir1, Direction dir2) {
+        return isTurningRight(dir1, dir2);
+    }
+
+    public static boolean isGoingStraight(Direction startRoad, Direction endRoad) {
+        return switch (startRoad) {
+            case south -> endRoad == north;
+            case north -> endRoad == south;
+            case east -> endRoad == west;
+            case west -> endRoad == east;
+        };
+    }
+
+    public static boolean isMakingUTurn(Direction startRoad, Direction endRoad) {
+        return startRoad == endRoad;
     }
 
     public static Direction getOpositeDirection(Direction direction) {
