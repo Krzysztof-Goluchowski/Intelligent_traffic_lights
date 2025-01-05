@@ -3,18 +3,12 @@ package recruitmentTask.simulation;
 import recruitmentTask.vehicle.Vehicle;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class StepStatus {
     private final List<String> leftVehicles;
 
-    public StepStatus(){
-        leftVehicles = new ArrayList<>();
-    }
-
-    public StepStatus(List<Vehicle> vehicles){
+    public StepStatus(List<Vehicle> vehicles) {
         leftVehicles = new ArrayList<>();
         addAllVehicles(vehicles);
     }
