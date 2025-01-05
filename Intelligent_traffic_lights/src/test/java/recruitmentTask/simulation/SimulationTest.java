@@ -1,5 +1,6 @@
 package recruitmentTask.simulation;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import recruitmentTask.command.AddVehicleCommand;
@@ -10,6 +11,11 @@ import recruitmentTask.intersection.IntersectionManager;
 import recruitmentTask.road.Direction;
 import recruitmentTask.vehicle.Vehicle;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,5 +159,50 @@ class SimulationTest {
         assertEquals(List.of("V5"), statuses.get(3).getLeftVehicles(), "V5 should pass next.");
         assertEquals(List.of("V6"), statuses.get(4).getLeftVehicles(), "Next vehicle from the south should pass after V5.");
         assertTrue(statuses.get(5).isEmpty(), "No vehicles should remain after all have passed.");
+    }
+
+    @Test
+    public void testWriteStepStatusesToFile() throws IOException {
+        StepStatus step1 = new StepStatus(List.of(new Vehicle("vehicle1", Direction.north, Direction.south)));
+        StepStatus step2 = new StepStatus(List.of());
+        StepStatus step3 = new StepStatus(List.of(
+                new Vehicle("vehicle2", Direction.north, Direction.south),
+                new Vehicle("vehicle3", Direction.south, Direction.north)
+        ));
+
+        List<StepStatus> stepStatuses = List.of(step1, step2, step3);
+
+        Path testFolderPath = Paths.get("src", "test", "resources");
+        if (!Files.exists(testFolderPath)) {
+            Files.createDirectories(testFolderPath);
+        }
+
+        Path testFilePath = testFolderPath.resolve("output-test.json");
+        String testFilename = testFilePath.toString();
+
+        Simulation simulation = new Simulation(List.of(), testFilename);
+        simulation.setStepStatuses(stepStatuses);
+
+        simulation.run();
+
+        String expectedJson = """
+        {
+          "stepStatuses": [
+            { "leftVehicles": ["vehicle1"] },
+            { "leftVehicles": [] },
+            { "leftVehicles": ["vehicle2", "vehicle3"] }
+          ]
+        }
+        """;
+
+        String actualJson = Files.readString(testFilePath);
+
+        Gson gson = new Gson();
+        String expected = gson.toJson(gson.fromJson(expectedJson, Object.class));
+        String actual = gson.toJson(gson.fromJson(actualJson, Object.class));
+
+        assertEquals(expected, actual);
+
+        Files.deleteIfExists(testFilePath);
     }
 }

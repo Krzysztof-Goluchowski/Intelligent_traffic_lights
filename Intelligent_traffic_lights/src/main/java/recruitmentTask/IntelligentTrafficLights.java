@@ -24,10 +24,8 @@ public class IntelligentTrafficLights {
             throw new RuntimeException(e);
         }
 
-        Simulation simulation = new Simulation(commands);
+        Simulation simulation = new Simulation(commands, outFile);
         simulation.run();
-
-        System.out.println(simulation.getStepStatuses());
 
         System.out.println("Application ends");
     }
