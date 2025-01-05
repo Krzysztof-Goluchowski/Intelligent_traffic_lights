@@ -205,10 +205,10 @@ class IntersectionManagerTest {
 
     @Test
     void testUTurnAtIntersection() {
-        AddVehicleCommand uTurnVehicleCommand = createAddVehicleCommand("V1", Direction.north, Direction.north);
+        AddVehicleCommand uTurnVehicle = createAddVehicleCommand("V1", Direction.north, Direction.north);
         AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.north);
 
-        manager.addVehicle(uTurnVehicleCommand);
+        manager.addVehicle(uTurnVehicle);
         manager.addVehicle(vehicle2);
 
         manager.step();
@@ -216,5 +216,60 @@ class IntersectionManagerTest {
 
         manager.step();
         assertEquals(List.of("V1"), stepStatuses.get(1).getLeftVehicles());
+    }
+
+    @Test
+    void testTurningRightOnRed() {
+        manager.setCurrentAxisGreenDuration(5);
+        AddVehicleCommand vehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.east);
+        AddVehicleCommand vehicle3 = createAddVehicleCommand("V3", Direction.east, Direction.north);
+
+        manager.addVehicle(vehicle1);
+        manager.addVehicle(vehicle2);
+        manager.addVehicle(vehicle3);
+
+        manager.step();
+        assertEquals(List.of("V3", "V1", "V2"), stepStatuses.getFirst().getLeftVehicles());
+        assertFalse(manager.getRoads().get(Direction.east).hasVehicles());
+    }
+
+    @Test
+    void testNoTurningRightOnRed() {
+        manager.setCurrentAxisGreenDuration(5);
+        AddVehicleCommand vehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.south);
+        AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.north);
+        AddVehicleCommand vehicle3 = createAddVehicleCommand("V3", Direction.east, Direction.north);
+
+        manager.addVehicle(vehicle1);
+        manager.addVehicle(vehicle2);
+        manager.addVehicle(vehicle3);
+
+        manager.step();
+        assertEquals(List.of("V1", "V2"), stepStatuses.getFirst().getLeftVehicles());
+        assertTrue(manager.getRoads().get(Direction.east).hasVehicles());
+
+        manager.step();
+        assertEquals(List.of("V3"), stepStatuses.get(1).getLeftVehicles());
+        assertFalse(manager.getRoads().get(Direction.east).hasVehicles());
+    }
+
+    @Test
+    void testFourVehiclesPassingAtOnce() {
+        manager.setCurrentAxisGreenDuration(5);
+        AddVehicleCommand vehicle1 = createAddVehicleCommand("V1", Direction.north, Direction.east);
+        AddVehicleCommand vehicle2 = createAddVehicleCommand("V2", Direction.south, Direction.west);
+        AddVehicleCommand vehicle3 = createAddVehicleCommand("V3", Direction.east, Direction.north);
+        AddVehicleCommand vehicle4 = createAddVehicleCommand("V4", Direction.west, Direction.south);
+
+        manager.addVehicle(vehicle1);
+        manager.addVehicle(vehicle2);
+        manager.addVehicle(vehicle3);
+        manager.addVehicle(vehicle4);
+
+        manager.step();
+        assertEquals(List.of("V4", "V3", "V1", "V2"), stepStatuses.getFirst().getLeftVehicles());
+        assertFalse(manager.getRoads().get(Direction.east).hasVehicles());
+        assertFalse(manager.getRoads().get(Direction.west).hasVehicles());
     }
 }

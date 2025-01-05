@@ -28,6 +28,14 @@ public class Road {
         return vehicle;
     }
 
+    public boolean hasVehicles() {
+        return vehicleCount > 0;
+    }
+
+    public Vehicle peekVehicle() {
+        return vehicles.peek();
+    }
+
     public Queue<Vehicle> getVehicles() {
         return vehicles;
     }

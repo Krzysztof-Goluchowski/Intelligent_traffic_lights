@@ -99,14 +99,14 @@ public class IntersectionManager {
         Direction dir2 = directions.get(1);
 
         if (vehiclesAtIntersection.isEmpty()) {
-            addVehiclesFromRoad(dir1);
-            addVehiclesFromRoad(dir2);
+            addVehicleFromRoad(dir1);
+            addVehicleFromRoad(dir2);
         } else {
             addVehicleFromOppositeDirection();
         }
     }
 
-    private void addVehiclesFromRoad(Direction direction) {
+    private void addVehicleFromRoad(Direction direction) {
         Vehicle vehicle = roads.get(direction).removeVehicle();
         addVehicleToIntersection(vehicle);
     }
@@ -127,14 +127,66 @@ public class IntersectionManager {
     private void exitIntersection() {
         List<Vehicle> exitedVehicles = new ArrayList<>();
 
+        if (currentAxisGreenDuration > 2) {
+            exitedVehicles.addAll(attemptRightTurnOnRed());
+        }
+
         if (vehiclesAtIntersection.size() == 1) {
             exitedVehicles.add(vehiclesAtIntersection.getFirst());
             vehiclesAtIntersection.clear();
         } else if (vehiclesAtIntersection.size() == 2) {
-            exitedVehicles = resolveIntersection();
+            exitedVehicles.addAll(resolveIntersection());
         }
 
         recordStepStatus(exitedVehicles);
+    }
+
+    private List<Vehicle> attemptRightTurnOnRed() {
+        List<Vehicle> exitedVehicles = new ArrayList<>();
+
+        List<Direction> directionsWithPossibleRightTurn = Direction.getPerpendicularRoads(currentAxis);
+
+        for (Direction direction : directionsWithPossibleRightTurn) {
+            Road road = roads.get(direction);
+            if (road.hasVehicles()) {
+                Vehicle vehicle = road.peekVehicle();
+                if (canTurnRightOnRed(vehicle)) {
+                    exitedVehicles.add(vehicle);
+                    road.removeVehicle();
+                }
+            }
+        }
+
+        return exitedVehicles;
+    }
+
+    private boolean canTurnRightOnRed(Vehicle vehicle) {
+        if (!Direction.isTurningRight(vehicle.startRoad(), vehicle.endRoad())) {
+            return false;
+        }
+
+        if (currentAxisGreenDuration < 2) {
+            return false;
+        }
+
+        for (Vehicle otherVehicle : vehiclesAtIntersection) {
+            if (!isSafeToTurnRight(vehicle, otherVehicle)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isSafeToTurnRight(Vehicle vehicle, Vehicle otherVehicle) {
+        Direction otherStart = otherVehicle.startRoad();
+        Direction otherEnd = otherVehicle.endRoad();
+
+        if (Direction.isOnTheRight(vehicle.startRoad(), otherStart)) {
+            return !Direction.isMakingUTurn(otherStart, otherEnd);
+        } else {
+            return !Direction.isGoingStraight(otherStart, otherEnd);
+        }
     }
 
     private List<Vehicle> resolveIntersection() {
@@ -158,7 +210,8 @@ public class IntersectionManager {
     }
 
     private boolean havePriority(Vehicle vehicle) {
-        return !Direction.isTurningLeft(vehicle.startRoad(), vehicle.endRoad());
+        return !(Direction.isTurningLeft(vehicle.startRoad(), vehicle.endRoad())
+                || Direction.isMakingUTurn(vehicle.startRoad(), vehicle.endRoad()));
     }
 
     private void recordStepStatus(List<Vehicle> leftVehicles) {
@@ -175,5 +228,9 @@ public class IntersectionManager {
 
     public List<Vehicle> getVehiclesAtIntersection() {
         return vehiclesAtIntersection;
+    }
+
+    public void setCurrentAxisGreenDuration(int duration) {
+        this.currentAxisGreenDuration = duration;
     }
 }
