@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,28 +172,37 @@ class SimulationTest {
 
         List<StepStatus> stepStatuses = List.of(step1, step2, step3);
 
-        Path tempFile = Files.createTempFile("test-output", ".json");
-        String tempFilename = tempFile.toString();
+        Path testFolderPath = Paths.get("src", "test", "resources");
+        if (!Files.exists(testFolderPath)) {
+            Files.createDirectories(testFolderPath);
+        }
 
-        Simulation simulation = new Simulation(List.of(), tempFilename);
+        Path testFilePath = testFolderPath.resolve("output-test.json");
+        String testFilename = testFilePath.toString();
+
+        Simulation simulation = new Simulation(List.of(), testFilename);
         simulation.setStepStatuses(stepStatuses);
+
         simulation.run();
 
-        Gson gson = new Gson();
         String expectedJson = """
-            {
-              "stepStatuses": [
-                { "leftVehicles": ["vehicle1"] },
-                { "leftVehicles": [] },
-                { "leftVehicles": ["vehicle2", "vehicle3"] }
-              ]
-            }
-            """;
-
-        try (FileReader reader = new FileReader(tempFilename)) {
-            String actualJson = gson.toJson(gson.fromJson(reader, Object.class));
-            String normalizedExpected = gson.toJson(gson.fromJson(expectedJson, Object.class));
-            assertEquals(normalizedExpected, actualJson);
+        {
+          "stepStatuses": [
+            { "leftVehicles": ["vehicle1"] },
+            { "leftVehicles": [] },
+            { "leftVehicles": ["vehicle2", "vehicle3"] }
+          ]
         }
+        """;
+
+        String actualJson = Files.readString(testFilePath);
+
+        Gson gson = new Gson();
+        String expected = gson.toJson(gson.fromJson(expectedJson, Object.class));
+        String actual = gson.toJson(gson.fromJson(actualJson, Object.class));
+
+        assertEquals(expected, actual);
+
+        Files.deleteIfExists(testFilePath);
     }
 }
